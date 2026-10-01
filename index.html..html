@@ -1,0 +1,355 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Entrevista Video Asincrónica - Daniela Vincenzini RRHH</title>
+    <style>
+        :root {
+            --primary: #2563eb;
+            --secondary: #1e293b;
+            --bg-color: #f8fafc;
+            --card-bg: #ffffff;
+            --text-main: #334155;
+            --border-color: #e2e8f0;
+        }
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background-color: var(--bg-color);
+            color: var(--text-main);
+            margin: 0;
+            padding: 20px;
+        }
+        .container { max-width: 800px; margin: 0 auto; }
+        header {
+            background-color: var(--secondary);
+            color: white;
+            padding: 25px;
+            border-radius: 8px;
+            text-align: center;
+            margin-bottom: 25px;
+        }
+        header h1 { margin: 0; font-size: 22px; }
+        header p { margin: 5px 0 0 0; color: #94a3b8; font-size: 13px; }
+        
+        .card {
+            background-color: var(--card-bg);
+            border: 1px solid var(--border-color);
+            border-radius: 8px;
+            padding: 25px;
+            margin-bottom: 20px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.02);
+        }
+        .card h3 { margin-top: 0; color: var(--primary); font-size: 18px; }
+        
+        .instructions-box {
+            background-color: #f1f5f9;
+            border-left: 4px solid var(--primary);
+            padding: 15px;
+            border-radius: 0 6px 6px 0;
+            margin-bottom: 20px;
+            font-size: 14px;
+        }
+        
+        textarea.editable-consigna {
+            width: 100%;
+            height: 100px;
+            background-color: #ffffff;
+            border: 1px dashed #cbd5e1;
+            padding: 8px;
+            border-radius: 6px;
+            font-family: inherit;
+            font-size: 13px;
+            color: var(--text-main);
+            box-sizing: border-box;
+            resize: vertical;
+            margin-top: 5px;
+        }
+
+        /* Estilos para el Grabador de Video */
+        .video-container {
+            text-align: center;
+            background: #0f172a;
+            border-radius: 8px;
+            overflow: hidden;
+            position: relative;
+            margin-bottom: 15px;
+        }
+        video {
+            width: 100%;
+            max-height: 400px;
+            display: block;
+            background: black;
+        }
+        .controls-bar {
+            display: flex;
+            justify-content: center;
+            gap: 10px;
+            margin-top: 15px;
+            flex-wrap: wrap;
+        }
+        .btn {
+            background-color: var(--primary);
+            color: white;
+            border: none;
+            padding: 10px 18px;
+            border-radius: 6px;
+            cursor: pointer;
+            font-size: 14px;
+            font-weight: 600;
+        }
+        .btn:hover { background-color: #1d4ed8; }
+        .btn-danger { background-color: #dc2626; }
+        .btn-danger:hover { background-color: #b91c1c; }
+        .btn-success { background-color: #16a34a; }
+        .btn-success:hover { background-color: #15803d; }
+        .btn-mail { background-color: #0284c7; }
+        .btn-mail:hover { background-color: #0369a1; }
+        .btn:disabled { background-color: #cbd5e1; cursor: not-allowed; }
+
+        .timer {
+            font-size: 16px;
+            font-weight: bold;
+            color: #dc2626;
+            background: #fee2e2;
+            padding: 5px 12px;
+            border-radius: 20px;
+            display: inline-block;
+            margin-bottom: 10px;
+        }
+
+        .candidate-form {
+            display: grid;
+            gap: 12px;
+            margin-bottom: 20px;
+        }
+        .candidate-form input {
+            width: 100%;
+            padding: 10px;
+            border: 1px solid #cbd5e1;
+            border-radius: 6px;
+            box-sizing: border-box;
+            font-size: 14px;
+        }
+        
+        .save-indicator {
+            font-size: 12px;
+            color: #16a34a;
+            font-weight: 600;
+            display: none;
+            margin-bottom: 10px;
+        }
+    </style>
+</head>
+<body>
+
+<div class="container">
+
+    <header>
+        <h1>Proceso de Selección Digital</h1>
+        <p>Daniela Vincenzini RRHH — Entrevista Inicial Asincrónica</p>
+    </header>
+
+    <!-- CONFIGURACIÓN DE CONSIGNAS (Editable para vos) -->
+    <div class="card">
+        <h3>💡 Configuración de Preguntas / Consignas por Puesto</h3>
+        <p style="font-size: 13px; color: #64748b;">Modificá el texto aquí abajo según el puesto que busques. Se guardará solo en este dispositivo.</p>
+        <span id="saveStatus" class="save-indicator">💾 ¡Consigna guardada automáticamente!</span>
+        
+        <div class="instructions-box">
+            <strong>Instrucciones y Preguntas para el candidato:</strong>
+            <textarea class="editable-consigna" id="consignaPersonalizada">1. Presentate brevemente (nombre, dónde vivís y tu especialidad principal).
+2. Contá un logro profesional reciente o un desafío técnico/general que hayas superado con éxito para este tipo de posición.
+3. Mencionalá cuáles son tus expectativas salariales netas y disponibilidad actual para incorporar.</textarea>
+        </div>
+    </div>
+
+    <!-- PASO 1: DATOS DEL CANDIDATO -->
+    <div class="card" id="stepCandidate">
+        <h3>1. Tus Datos Personales</h3>
+        <p style="font-size: 13px; color: #64748b;">Completá tus datos antes de iniciar la grabación de presentación.</p>
+        <div class="candidate-form">
+            <input type="text" id="candName" placeholder="Nombre y Apellido completo">
+            <input type="email" id="candEmail" placeholder="Correo electrónico de contacto">
+            <input type="text" id="candPhone" placeholder="Teléfono / WhatsApp">
+        </div>
+        <button class="btn" onclick="validarYContinuar()">Continuar a la Entrevista ➔</button>
+    </div>
+
+    <!-- PASO 2: GRABADOR -->
+    <div class="card" id="stepInterview" style="display: none;">
+        <h3>2. Video-Presentación (Máximo 5 minutos)</h3>
+        
+        <div class="instructions-box" id="boxConsignasVisualizacion" style="white-space: pre-wrap;">
+            <!-- Se cargan dinámicamente las consignas -->
+        </div>
+
+        <div align="center">
+            <div id="timerDisplay" class="timer" style="display: none;">⏱️ Tiempo: <span id="timeCount">05:00</span></div>
+        </div>
+
+        <div class="video-container">
+            <video id="videoPreview" autoplay muted playsinline></video>
+        </div>
+
+        <div class="controls-bar">
+            <button id="btnStart" class="btn btn-success" onclick="iniciarGrabacion()">🔴 Iniciar Grabación</button>
+            <button id="btnStop" class="btn btn-danger" onclick="detenerGrabacion()" disabled>⏹️ Detener Grabación</button>
+            <button id="btnDownload" class="btn" style="display: none;" onclick="descargarVideo()">📥 1. Descargar Video</button>
+            <button id="btnEmail" class="btn btn-mail" style="display: none;" onclick="enviarMail()">✉️ 2. Enviar por Mail a RRHH</button>
+        </div>
+    </div>
+
+</div>
+
+<script>
+    let mediaRecorder;
+    let recordedChunks = [];
+    let timerInterval;
+    let timeLeft = 300;
+
+    const textareaConsigna = document.getElementById('consignaPersonalizada');
+    const saveStatus = document.getElementById('saveStatus');
+
+    const savedConsigna = localStorage.getItem('consigna_entrevista');
+    if (savedConsigna !== null) {
+        textareaConsigna.value = savedConsigna;
+    }
+
+    textareaConsigna.addEventListener('input', () => {
+        localStorage.setItem('consigna_entrevista', textareaConsigna.value);
+        saveStatus.style.display = 'inline';
+        setTimeout(() => { saveStatus.style.display = 'none'; }, 2000);
+    });
+
+    function validarYContinuar() {
+        const name = document.getElementById('candName').value;
+        const email = document.getElementById('candEmail').value;
+        
+        if(!name || !email) {
+            alert('Por favor completá tu nombre y correo para continuar.');
+            return;
+        }
+
+        document.getElementById('boxConsignasVisualizacion').innerText = textareaConsigna.value;
+        document.getElementById('stepCandidate').style.display = 'none';
+        document.getElementById('stepInterview').style.display = 'block';
+        
+        inicializarCamara();
+    }
+
+    async function inicializarCamara() {
+        try {
+            const stream = await navigator.mediaDevices.getUserMedia({ video: true, audio: true });
+            const videoElement = document.getElementById('videoPreview');
+            videoElement.srcObject = stream;
+            
+            mediaRecorder = new MediaRecorder(stream, { mimeType: 'video/webm; codecs=vp9' });
+            
+            mediaRecorder.ondataavailable = function(event) {
+                if (event.data.size > 0) {
+                    recordedChunks.push(event.data);
+                }
+            };
+
+            mediaRecorder.onstop = function() {
+                const blob = new Blob(recordedChunks, { type: 'video/webm' });
+                const videoURL = URL.createObjectURL(blob);
+                const videoElement = document.getElementById('videoPreview');
+                videoElement.srcObject = null;
+                videoElement.src = videoURL;
+                videoElement.controls = true;
+                
+                document.getElementById('btnDownload').style.display = 'inline-block';
+                document.getElementById('btnEmail').style.display = 'inline-block';
+            };
+        } catch (error) {
+            alert('No pudimos acceder a tu cámara o micrófono. Asegurate de dar permisos en tu navegador.');
+            console.error(error);
+        }
+    }
+
+    function iniciarGrabacion() {
+        recordedChunks = [];
+        mediaRecorder.start();
+        
+        document.getElementById('btnStart').disabled = true;
+        document.getElementById('btnStop').disabled = false;
+        document.getElementById('timerDisplay').style.display = 'inline-block';
+        
+        timeLeft = 300;
+        actualizarReloj();
+        
+        timerInterval = setInterval(() => {
+            timeLeft--;
+            actualizarReloj();
+            if (timeLeft <= 0) {
+                detenerGrabacion();
+                alert('Se cumplió el tiempo límite de los 5 minutos.');
+            }
+        }, 1000);
+    }
+
+    function detenerGrabacion() {
+        mediaRecorder.stop();
+        clearInterval(timerInterval);
+        
+        document.getElementById('btnStop').disabled = true;
+        document.getElementById('timerDisplay').style.display = 'none';
+        
+        const videoElement = document.getElementById('videoPreview');
+        if(videoElement.srcObject) {
+            const tracks = videoElement.srcObject.getTracks();
+            tracks.forEach(track => track.stop());
+        }
+    }
+
+    function actualizarReloj() {
+        const minutes = Math.floor(timeLeft / 60);
+        const seconds = timeLeft % 60;
+        document.getElementById('timeCount').innerText = 
+            `${String(minutes).padStart(2, '0')}:${String(seconds).padStart(2, '0')}`;
+    }
+
+    function descargarVideo() {
+        const name = document.getElementById('candName').value.replace(/[^a-zA-Z0-9]/g, '_');
+        const blob = new Blob(recordedChunks, { type: 'video/webm' });
+        const url = URL.createObjectURL(blob);
+        const a = document.createElement('a');
+        a.style.display = 'none';
+        a.href = url;
+        a.download = `Entrevista_${name}.webm`;
+        document.body.appendChild(a);
+        a.click();
+        setTimeout(() => {
+            document.body.removeChild(a);
+            window.URL.revokeObjectURL(url);
+        }, 100);
+    }
+
+    function enviarMail() {
+        const name = document.getElementById('candName').value;
+        const emailCand = document.getElementById('candEmail').value;
+        const phone = document.getElementById('candPhone').value;
+        
+        // Primero descarga el video por seguridad
+        descargarVideo();
+
+        // Estructurar el correo directo a tu casilla
+        const destinatario = "talentos@dvincenzini.com";
+        const asunto = encodeURIComponent(`Entrevista de Video - ${name}`);
+        const cuerpo = encodeURIComponent(
+            `Hola Daniela,\n\nTe envío adjunto el archivo de video con mi entrevista asincrónica.\n\n` +
+            `--- DATOS DEL POSTULANTE ---\n` +
+            `Nombre y Apellido: ${name}\n` +
+            `Correo: ${emailCand}\n` +
+            `Teléfono: ${phone}\n\n` +
+            `*(Nota para el candidato: Recordá adjuntar el archivo descargado "Entrevista_${name.replace(/[^a-zA-Z0-9]/g, '_')}.webm" antes de enviar este correo).*`
+        );
+
+        window.location.href = `mailto:${destinatario}?subject=${asunto}&body=${cuerpo}`;
+    }
+</script>
+
+</body>
+</html>
